@@ -2,7 +2,9 @@
    TEAM KOALAFIED — SITE CONTENT
    ------------------------------------------------------------
    This is the only file most people need to touch.
-   Plain JSON wrapped in a line of JavaScript
+   A JavaScript object — copy the quotes, commas and brackets of the
+   existing entries exactly. Lines starting with // are notes, ignored
+   by the site.
    ============================================================ */
 
 window.SITE_CONTENT = {
@@ -10,8 +12,6 @@ window.SITE_CONTENT = {
   team: {
     number: "6996",
     name: "Team Koalafied",
-    tagline: "The only school-based FRC team in South Australia.",
-    accent: "#0a7770",
     logo: "assets/img/logo.svg",
     email: "teamkoalafied@gmail.com",
     social: [
@@ -28,7 +28,6 @@ window.SITE_CONTENT = {
     { id: "gallery", label: "Gallery" },
     { id: "robots", label: "Robots" },
     { id: "resources", label: "Resources" },
-   // { id: "page3", label: "Page 3"},   // idk if this will work lol (it worked, but no button)
     { id: "binder", label: "2026 Binder", href: "https://2026.teamkoalafied.com" }
   ],
 
@@ -113,7 +112,7 @@ window.SITE_CONTENT = {
       { title: "Programming", desc: "Writing and fine-tuning robot code, designing autonomous paths." },
       { title: "CAD", desc: "3D-modelling components and full robots before they're built." },
       { title: "Prototyping", desc: "Turning an idea into a working mechanism, fast." },
-      { title: "Electrical", desc: "Wiring all of the robots mechanisms, bringing the robot to life." },
+      { title: "Electrical", desc: "Wiring all of the robot's mechanisms, bringing the robot to life." },
       { title: "Woodwork", desc: "Producing large field elements for each year's game." },
       { title: "Media", desc: "Filming, editing, photos, and marketing — including this website." },
       { title: "Sponsorships", desc: "Reaching out to local companies to help fund the season." }
@@ -142,7 +141,7 @@ window.SITE_CONTENT = {
 
   robots: {
     title: "Our Robots",
-    thesis: "Competing since in the FIRST® Robotics Competiton since 2018, Team Koalafied have built a wide range of robots. Designed and built from scratch each year, they complete a unique game objective each year.",
+    thesis: "Competing in the FIRST® Robotics Competition since 2018, Team Koalafied have built a wide range of robots. Designed and built from scratch each year, they complete a unique game objective each year.",
     items: [
       {
         name: "Lemon Launcher",
@@ -315,7 +314,7 @@ window.SITE_CONTENT = {
             titles: ["Qualification Rank 19"] },
           { event: "2019 South Pacific Regional", sub: "Sydney, Australia",
             titles: ["Qualification Rank 37", "Tied 4th Place", "Creativity Award"],
-            alliance: ["Team 4614 — Purple Monkey Diswasher", "Team 4270 — Crusaders"] }
+            alliance: ["Team 4614 — Purple Monkey Dishwasher", "Team 4270 — Crusaders"] }
         ]
       },
       {
@@ -348,7 +347,6 @@ window.SITE_CONTENT = {
     thesis: "We always publish code and CAD from past seasons, in case it helps another team. Questions or comments are welcome: see the email below.",
 
     code: {
-      title: "Code",
       desc: "Team Koalafied programs in C++. Code for every robot we've built is public.",
       href: "https://github.com/TeamKoalafied/public",
       label: "GitHub — TeamKoalafied/public"

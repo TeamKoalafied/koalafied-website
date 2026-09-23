@@ -14,7 +14,7 @@ The team's general-purpose website
 ## Structure
 
 - Most edits should only involve **content.js**– this handles almost all of the text on the website. This is fairly simple to do, just copy the existing syntax.
-- **assetts/css/Site.js** then interprets the text that content.js receives and renders that into the layout of the website. You edit site.js to change the layout, add interactive elements etc. See "Adding a new section or page" below for details.
+- **assets/js/site.js** then interprets the text that content.js receives and renders that into the layout of the website. You edit site.js to change the layout, add interactive elements etc. See "Adding a new section or page" below for details.
 - **assets/css/site.css** adjusts the style of the website: the palette, the font, the spacing between elements. 
 - Add any images used throughout the website to **assets/img**. Label the image file with an appropriate title. 
 - To open the website locally, use **index.html**. The .html file itself is just a wrapper for content.js and site.js– it doesn't really contain anything to edit. 
@@ -38,10 +38,13 @@ The team's general-purpose website
 4. Add `renderYourSection()` to the `main.innerHTML` chain in `boot()`.
 
 **New standalone page** (like Resources, Robots):
-1. Copy `resources.html`, rename it, and swap the `id="resources-page"` for your own id.
-2. In `content.js`, add a data object for the page's content, and add it to `PAGE_ROUTES` at the top of `assets/js/site.js` (maps the nav id to the new `.html` file).
+1. Copy `resources.html` and rename it. In the copy, change the `<title>`, the `description`, and both `resources-page` ids (the `<main id>` and the skip link's `href="#…"`) to your own.
+2. In `content.js`, add a data object for the page's content and a `{ id, label }` entry in the `nav` array. Then add the same id to `PAGE_ROUTES` in `assets/js/site.js` (maps the nav id to the new `.html` file).
 3. In `assets/js/site.js`, write a `renderYourPage()` function (see `renderResources()` for a template).
-4. In `boot()`, grab the container by id and set `yourPage.innerHTML = renderYourPage()`, following the existing `resourcesPage`/`robotsPage` pattern.
+4. In `boot()`, following the existing `resourcesPage`/`robotsPage` pattern:
+   - grab the container by id and set `yourPage.innerHTML = renderYourPage()`;
+   - add it to the `currentPage` chain — otherwise the nav's About/Join/etc. links won't point back to `index.html`;
+   - if the page has carousels or clickable photos, add it to `contentRoot` too.
 
 ## Local preview
 

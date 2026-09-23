@@ -1,8 +1,8 @@
 /* ============================================================
    Team Koalafied — site stylesheet
    Same token system as the season technical binder (see
-   ../eh/assets/css/binder.css and ../koalafied-design-system) —
-   edit tokens in :root, everything else derives from them.
+   ../koalafied-design-system) — edit tokens in :root, everything
+   else derives from them.
    ============================================================ */
 
 /* ---- 1. Tokens ------------------------------------------- */
@@ -16,9 +16,7 @@
   --rule:     #e6e6e2;
   --rule-2:   #eeeeeb;
   --accent:   #0a7770;          /* team teal — swap to re-theme the whole site */
-  --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
   --accent-2: #204a72;          /* team navy — secondary accent, used sparingly */
-  --accent-3: #b8420e;          /* team orange — metadata/tag labels only */
   --pop:      #44a5a7;          /* highlighting stuff */
   --pop-ink:  #3a2c05;
   --warn:     #b73528;
@@ -109,25 +107,19 @@ code {
   margin-top: 3px; border-radius: 2px;
 }
 
-/* Resources (a separate page) and any external link (like the current
-   binder) aren't scroll-to anchors like their siblings, so they get no
-   ::after underline. A rule before the first of them groups the anchors
-   apart — nav-group-start, not repeated per item so two in a row don't
-   get a double rule. External links also get a small corner-arrow, same
-   idea as the binder site's external CAD link, to show they leave the site;
-   Resources is an internal page jump, so it carries no icon. */
+/* Standalone pages (Robots, Resources) and external links (the binder)
+   sit in a trailing group after the in-page anchors. A rule before the
+   first of them (.nav-group-start) separates the two groups. External
+   links also get a small corner-arrow to show they leave the site;
+   standalone pages carry no icon. */
 .nav-links a.nav-page {
   display: inline-flex; align-items: center; gap: 5px;
 }
 .nav-links a.nav-page svg { width: 12px; height: 12px; flex: none; }
 .nav-links a.nav-group-start {
-  /* A border-left glued to this element's own box can only ever hug one
-     side of the gap (border sits right against padding in the box
-     model), which put the rule hard against Resources rather than
-     centered between it and Gallery. Drawing it as an absolutely
-     positioned line at the midpoint of margin-left splits the gap evenly
-     instead, while this button's own padding stays the same 11px/11px as
-     every other nav link (so its hover highlight is symmetric too). */
+  /* The rule is drawn at the midpoint of margin-left (not as a
+     border-left) so it sits centered in the gap, and this link keeps the
+     same padding and hover highlight as every other nav link. */
   position: relative;
   margin-left: 26px;
 }
@@ -255,7 +247,7 @@ code {
 }
 .section-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* ---- 6. Cards (About stats / Join areas) ----------------------- */
+/* ---- 6. Cards (Join areas / event results) --------------------- */
 
 .cards {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -265,11 +257,9 @@ code {
   background: var(--panel); border: 1px solid var(--rule); border-radius: 3px;
   padding: 18px 20px; transition: border-color .15s, transform .15s;
 }
-a.card { text-decoration: none; display: block; }
-a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
 .card h4 { font-size: 16px; font-weight: 600; }
 .card p { margin-top: 8px; font-size: 13.5px; color: var(--ink-3); line-height: 1.5; }
-.card .card-robot { font-style: italic; color: var(--ink-2); font-weight: 500; }
+.card-robot { font-style: italic; color: var(--ink-2); font-weight: 500; }
 .card-links { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
 .card-go {
   display: inline-flex; align-items: center; gap: 7px;
@@ -317,8 +307,9 @@ a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
 .conduct-item .conduct-list li { list-style: disc; color: var(--ink-2); line-height: 1.6; margin-top: 6px; }
 .conduct-item .conduct-list li:first-child { margin-top: 0; }
 
-/* Events (About section) — a card per competition, results as icon tags,
-   left edge colored by series so the grid reads at a glance. */
+/* Event cards (About carousel, Robots page) — a card per competition,
+   results as icon tags, left edge colored by series so they read at a
+   glance. */
 .event-card { border-left-width: 3px; }
 .event-card--ausc { border-left-color: var(--accent); }
 .event-card--mrt { border-left-color: var(--accent-2); }
@@ -343,10 +334,8 @@ a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
    the same `flex` shorthand for photos) so this basis actually wins
    regardless of source order. */
 .carousel-item.carousel-item--events { flex: 0 0 clamp(180px, 20vw, 210px); }
-/* Robots page Competitions carousel reuses .carousel--events, but its cards
-   used to sit in a `.cards` grid (minmax(220px, 1fr)) before going
-   horizontal — keep that same width rather than the narrower About-page
-   event card. */
+/* Robots page Competitions carousel reuses .carousel--events with wider
+   cards than the About page, since they also carry an alliance line. */
 .carousel-item.carousel-item--results { flex: 0 0 clamp(200px, 65vw, 260px); }
 .carousel--events .carousel-nav { top: 50%; }
 /* Cards vary a lot in height (1 vs 4 result tags) — without this, flex's
@@ -357,8 +346,8 @@ a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
 /* ---- 6.5 Robots page ---------------------------------------------- */
 
 /* One entry per robot: name + photo gallery on the left, a stack of
-   info "boxes" on the right (competed-in, function, official results,
-   offseason results) — see renderRobots() in site.js. Media column goes
+   info "boxes" on the right (competed in, what it does, competitions) —
+   see renderRobots() in site.js. Media column goes
    sticky on wider screens so it stays in view while the results column
    (which can run long — several event cards) scrolls past it. */
 .robot-list { margin-top: clamp(28px, 4vw, 44px); }
@@ -384,8 +373,8 @@ a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
    near-square (sometimes portrait) full-robot photos, so the frame needs
    to be close to square too or object-fit: cover crops the top/bottom of
    the robot off. Arrows center on the track itself (like the Events
-   carousel) rather than a fixed frame height, since single-image robots
-   render no frame at all. */
+   carousel), since the base .carousel-nav position assumes the
+   Gallery's frame height. */
 .robot-media .carousel-frame { height: clamp(200px, 32vw, 360px); }
 .carousel--robot .carousel-nav { top: 50%; }
 
@@ -453,8 +442,8 @@ a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
 
 /* Two sponsor moments: a quiet banner strip right under the hero (small
    logos, small label), and the fuller "thank you" section further down the
-   page (bigger logos, labelled). Both share .sponsor-logo for filter/
-   hover behavior; size is set per-container below. */
+   page (bigger logos, labelled). Both share .sponsor-logo; size is set
+   per-container below. */
 .sponsor-banner { border-top: 1px solid var(--rule); padding: 24px 0; }
 .sponsor-banner-label { text-align: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--ink-3); margin-bottom: 12px; }
 .sponsor-banner-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 34px; }
@@ -482,17 +471,25 @@ a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
 
 /* ---- 9. Lightbox — same component as the binder site ------------- */
 
+/* A native <dialog> stretched full-screen. @starting-style + allow-discrete
+   give it a fade in and out without any JS timing. */
 .lightbox {
-  position: fixed; inset: 0; z-index: 500;
-  display: grid; place-items: center; padding: clamp(20px, 5vw, 64px);
+  width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0;
+  place-items: center; padding: clamp(20px, 5vw, 64px);
   background: rgba(8, 8, 9, .86); backdrop-filter: blur(3px);
-  opacity: 0; transition: opacity .18s ease; cursor: zoom-out; pointer-events: none;
+  opacity: 0; cursor: zoom-out;
+  transition: opacity .18s ease, display .18s allow-discrete, overlay .18s allow-discrete;
 }
-.lightbox.is-open { opacity: 1; pointer-events: auto; }
-.lightbox[hidden] { display: none; }
-@media (prefers-reduced-motion: reduce) { .lightbox { transition: none; } }
+.lightbox[open] { display: grid; opacity: 1; }
+.lightbox::backdrop { background: none; }
+html:has(.lightbox[open]) { overflow: hidden; }
 .lightbox figure { margin: 0; max-width: 100%; max-height: 100%; display: flex; flex-direction: column; align-items: center; transform: scale(.97); transition: transform .18s ease; }
-.lightbox.is-open figure { transform: scale(1); }
+.lightbox[open] figure { transform: scale(1); }
+@starting-style {
+  .lightbox[open] { opacity: 0; }
+  .lightbox[open] figure { transform: scale(.97); }
+}
+@media (prefers-reduced-motion: reduce) { .lightbox, .lightbox figure { transition: none; } }
 .lightbox img { max-width: 100%; max-height: 78vh; object-fit: contain; border-radius: 4px; box-shadow: 0 24px 64px rgba(0,0,0,.45); cursor: default; }
 .lightbox figcaption { margin-top: 16px; max-width: 62ch; text-align: center; font-size: 14px; line-height: 1.5; color: #e8e7e3; }
 .lightbox figcaption:empty { display: none; }

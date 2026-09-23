@@ -21,8 +21,8 @@
     return t.content.firstElementChild;
   }
 
-  // Shared prev/next button for any [data-carousel] track — see
-  // renderGallery() and the Events carousel in renderAbout().
+  // Shared prev/next button for any [data-carousel] track (Gallery,
+  // Events, and the Robots page carousels).
   function carouselArrow(dir, label) {
     var d = dir < 0 ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7';
     return '<button class="carousel-nav carousel-' + (dir < 0 ? 'prev' : 'next') + '" type="button" aria-label="' + label + '" disabled>' +
@@ -42,13 +42,14 @@
   // #hash anchors) and any standalone page like resources.html or
   // robots.html (which need those same anchors qualified back to
   // "index.html#id", and point at themselves directly rather than by
-  // hash). Add a standalone page by giving it a nav.id here and a
-  // matching #<id>-page container in boot() — no other nav change needed.
+  // hash). Add a standalone page by giving it a nav.id here, plus a
+  // matching #<id>-page container and `currentPage` entry in boot().
   var PAGE_ROUTES = { resources: 'resources.html', robots: 'robots.html' };
 
   // External-link icon (opens-in-new-tab), same icon as the binder site's
-  // CAD link — see ../koalafied-design-system. Reused everywhere a link
-  // leaves the site (nav, hero CTA, resources page) instead of a "→".
+  // CAD link — see ../koalafied-design-system. Used on external links in
+  // the nav, hero CTAs, and the Resources and Robots pages (not the
+  // footer's social links).
   var EXTERNAL_ICON =
     '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>';
@@ -79,9 +80,8 @@
       // The corner-arrow icon is reserved for genuine external links —
       // standalone pages are an internal page jump, so they get no icon,
       // just the separating rule via .nav-group-start.
-      var attrs = isExternal && n.id !== 'binder' ? ' target="_blank" rel="noopener"' : '';
       var icon = isExternal ? EXTERNAL_ICON : '';
-      return '<a href="' + esc(href) + '" data-nav="' + esc(n.id) + '" class="' + cls + '"' + attrs + '>' + esc(n.label) + icon + '</a>';
+      return '<a href="' + esc(href) + '" data-nav="' + esc(n.id) + '" class="' + cls + '">' + esc(n.label) + icon + '</a>';
     }).join('');
 
     return el(
@@ -175,8 +175,8 @@
   // Each section on the page is a header (via introRow, or a plain
   // title+thesis pair) followed by zero or more of these blocks. Adding a
   // new section is usually just a new content.js entry plus a couple of
-  // calls below — see renderAbout/renderGallery/renderSponsors/renderJoin
-  // for examples of composing them with renderSection().
+  // calls below — see renderAbout/renderGallery/renderJoin for examples
+  // of composing them with renderSection().
 
   // Wraps header + block HTML in the standard "<section class="sec">
   // <div class="wrap">" shell shared by About, Gallery and Join.
@@ -211,8 +211,8 @@
   }
 
   // A photo carousel — used by Gallery and the Robots page. `opts.margin`
-  // lets a caller override the inline margin-top (Gallery's top-level use
-  // needs more breathing room than Robots' nested one). Captions
+  // sets the inline margin (a CSS value, or false for none — Robots sets
+  // its own in CSS); `opts.figureClass` adds a class to the figure. Captions
   // (Gallery) and lightbox `full` zoom targets (Robots) are both optional
   // per-item, since neither section uses both.
   function blockImageCarousel(items, carouselId, opts) {
@@ -261,9 +261,8 @@
 
   // Small, quiet strip right under the hero photo — just a small label and
   // logos, in whatever order content.js lists C.sponsors (deliberately not
-  // grouped by tier — see the comment on `sponsors` in content.js).
-  // The fuller "thank you" section (renderSponsors) does the honors later
-  // in the page.
+  // grouped by tier — the fuller "thank you" section, renderSponsors, does
+  // that later in the page).
   function renderSponsorBanner() {
     if (!Array.isArray(C.sponsors) || !C.sponsors.length) return '';
     var row = C.sponsors.map(function (s) {
@@ -361,8 +360,8 @@
   // One result card per event — shared across a robot's combined
   // Competitions list. Reuses the same icon-tag treatment and series color
   // coding as the About section's event cards, plus an alliance-partner
-  // line and an Official/Offseason badge underneath (since official and
-  // offseason results are no longer split into separate headings).
+  // line and an Official/Offseason badge, so the distinction stays visible
+  // in one combined list.
   function robotResultCard(ev, isOfficial) {
     var tags = (ev.titles || []).map(function (t) {
       return '<span class="event-tag">' + eventIcon(t) + esc(t) + '</span>';
@@ -464,57 +463,32 @@
   }
 
   function wireLightbox(root) {
+    // A native <dialog>: showModal() handles Escape, keeps keyboard focus
+    // inside, makes the page behind inert, and returns focus on close.
     var box = el(
-      '<div class="lightbox" id="lightbox" hidden>' +
+      '<dialog class="lightbox" aria-label="Photo viewer">' +
         '<button class="lightbox-close" type="button" aria-label="Close">' +
           '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
         '</button>' +
-        '<figure><img id="lightbox-img" src="" alt=""><figcaption id="lightbox-cap"></figcaption></figure>' +
-      '</div>');
+        '<figure><img alt=""><figcaption></figcaption></figure>' +
+      '</dialog>');
     document.body.appendChild(box);
 
-    var img = box.querySelector('#lightbox-img');
-    var cap = box.querySelector('#lightbox-cap');
-    var closeBtn = box.querySelector('.lightbox-close');
-    var opener = null;
-
-    function captionFor(src) {
-      var item = src.closest('.carousel-item');
-      if (item) {
-        var c1 = item.querySelector('.carousel-cap');
-        return c1 ? c1.innerHTML : esc(src.alt || '');
-      }
-      return esc(src.alt || '');
-    }
-
-    function open(src) {
-      opener = document.activeElement;
-      img.src = src.dataset.full || src.currentSrc || src.src;
-      img.alt = src.alt || '';
-      cap.innerHTML = captionFor(src);
-      box.hidden = false;
-      requestAnimationFrame(function () { box.classList.add('is-open'); });
-      document.documentElement.style.overflow = 'hidden';
-      closeBtn.focus();
-    }
-    function close() {
-      box.classList.remove('is-open');
-      document.documentElement.style.overflow = '';
-      var done = function () { box.hidden = true; img.src = ''; box.removeEventListener('transitionend', done); };
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) done();
-      else box.addEventListener('transitionend', done);
-      if (opener && opener.focus) opener.focus();
-    }
+    var img = box.querySelector('img');
+    var cap = box.querySelector('figcaption');
 
     root.addEventListener('click', function (e) {
-      var target = e.target.closest('img');
-      if (!target || !root.contains(target)) return;
-      if (target.classList.contains('sponsor-logo')) return;
-      open(target);
+      var src = e.target.closest('img');
+      if (!src || src.classList.contains('sponsor-logo')) return;
+      var item = src.closest('.carousel-item');
+      var c = item && item.querySelector('.carousel-cap');
+      img.src = src.dataset.full || src.currentSrc || src.src;
+      img.alt = src.alt;
+      cap.textContent = c ? c.textContent : src.alt;
+      box.showModal();
     });
-    box.addEventListener('click', function (e) { if (e.target !== img) close(); });
-    closeBtn.addEventListener('click', close);
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
+    // Any click except on the photo itself closes it (incl. the X button).
+    box.addEventListener('click', function (e) { if (e.target !== img) box.close(); });
   }
 
   // Mobile hamburger: the nav links panel drops down under the bar.
@@ -572,9 +546,6 @@
   function boot() {
     if (!C || !C.team) return fail('content.js did not define window.SITE_CONTENT.');
 
-    var root = document.documentElement;
-    if (C.team.accent) root.style.setProperty('--accent', C.team.accent);
-
     var main = document.getElementById('site');
     var resourcesPage = document.getElementById('resources-page');
     var robotsPage = document.getElementById('robots-page');
@@ -584,12 +555,10 @@
     // conduct.html has no nav.id / PAGE_ROUTES entry — it's reachable only
     // by navigating to it directly, on purpose. Unlike the other standalone
     // pages, its content is static HTML in the page itself (not content.js),
-    // since it's one-off prose nothing else reuses — this var only drives
-    // the page <title> below.
+    // since it's one-off prose nothing else reuses — this var only makes
+    // the nav point its anchors back at index.html.
     var currentPage = resourcesPage ? 'resources' : (robotsPage ? 'robots' : (conductPage ? 'conduct' : null));
-    var pageTitles = { resources: 'Resources — ', robots: 'Our Robots — ', conduct: 'Code of Conduct — ' };
 
-    document.title = (pageTitles[currentPage] || '') + C.team.name + ' — Team ' + C.team.number;
     document.body.insertBefore(renderNav(currentPage), document.body.firstChild);
     wireNavToggle();
 
@@ -620,8 +589,9 @@
         social +
       '</span>';
 
-    // Carousels/lightbox apply to whichever page actually rendered content;
-    // scroll-spy is index.html-only since it tracks in-page #anchors.
+    // Carousels/lightbox are only wired on index.html and the Robots page
+    // (the only pages with carousels); scroll-spy is index.html-only since
+    // it tracks in-page #anchors.
     var contentRoot = main || robotsPage;
     if (contentRoot) {
       wireCarousels(contentRoot);
