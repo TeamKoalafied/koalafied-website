@@ -206,8 +206,16 @@
     return '<span class="team-avatar team-avatar--none" aria-hidden="true">' + esc(initials || '#') + '</span>';
   }
 
-  // One event in the results table: a row of four cells, plus a second
-  // row listing alliance partners when there are any. `ev` is the
+  // Colors each event's left edge by series, so the list reads at a
+  // glance before you even read the labels.
+  function eventSeries(name) {
+    if (/championship/i.test(name)) return 'champs';
+    if (/melbourne/i.test(name)) return 'mrt';
+    return 'ausc';
+  }
+
+  // One event in the results table: its own <tbody>, holding a row of four
+  // cells plus a second row listing alliance partners when there are any. `ev` is the
   // {event, sub, titles} shape used by about.events and each robot's
   // official/offseason lists, with an optional `kind` ("Official" or
   // "Offseason") shown beside the location.
@@ -228,8 +236,7 @@
       return '<td class="' + cls + (html ? '' : ' res-empty') + '">' + html + '</td>';
     };
 
-    var rowClass = [place && /^1st/i.test(place) ? 'is-win' : '', partners.length ? 'has-alliance' : ''].join(' ').trim();
-    var main = '<tr' + (rowClass ? ' class="' + rowClass + '"' : '') + '>' +
+    var main = '<tr' + (place && /^1st/i.test(place) ? ' class="is-win"' : '') + '>' +
       cell('res-event', '<strong>' + esc(ev.event) + '</strong>' + (meta ? '<span>' + meta + '</span>' : '')) +
       cell('res-finish', (place ? '<strong>' + esc(place) + '</strong>' : '') +
         notes.map(function (n) { return '<span>' + esc(n) + '</span>'; }).join('')) +
@@ -239,7 +246,8 @@
       cell('res-rank', rank ? esc(rank) : '') +
     '</tr>';
 
-    if (!partners.length) return main;
+    var open = '<tbody class="res-group res-group--' + eventSeries(ev.event) + '">';
+    if (!partners.length) return open + main + '</tbody>';
     var teams = partners.map(function (t) {
       var inner = teamAvatar(t, year) +
         '<span class="team-label">' + (t.number ? '<b>' + esc(t.number) + '</b>' : '') + (t.name ? ' ' + esc(t.name) : '') + '</span>';
@@ -247,10 +255,10 @@
         ? '<a class="team" href="https://www.thebluealliance.com/team/' + t.number + (year ? '/' + year : '') + '" target="_blank" rel="noopener">' + inner + '</a>'
         : '<span class="team">' + inner + '</span>') + '</li>';
     }).join('');
-    return main +
+    return open + main +
       '<tr class="res-alliance"><td colspan="4"><div class="res-alliance-in">' +
         '<span class="res-alliance-label">Alliance</span><ul>' + teams + '</ul>' +
-      '</div></td></tr>';
+      '</div></td></tr></tbody>';
   }
 
   // The results table — About's Recent Competitions and every robot on the
@@ -261,7 +269,7 @@
     return (heading ? '<h3 class="sub-title">' + esc(heading) + '</h3>' : '') +
       '<div class="results"><table>' +
         '<thead><tr><th scope="col">Event</th><th scope="col">Finish</th><th scope="col">Awards &amp; honours</th><th scope="col">Qualifying rank</th></tr></thead>' +
-        '<tbody>' + events.map(resultRow).join('') + '</tbody>' +
+        events.map(resultRow).join('') +
       '</table></div>';
   }
 

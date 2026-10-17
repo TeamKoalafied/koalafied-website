@@ -346,19 +346,28 @@ code {
 /* ---- 6.5 Results table (About's Recent Competitions, each robot) --- */
 
 /* One plain table, same columns everywhere (see blockResults in site.js):
-   Event, Finish, Awards & honours, Qualifying rank. Only rules between
-   rows — no boxes or tags. */
+   Event, Finish, Awards & honours, Qualifying rank. Each event is its own
+   <tbody>, set apart by space and a left edge colored by series (same
+   colors as the old event cards) rather than rules between rows. A table
+   can't put space between its rows, so rows are laid out as a grid; every
+   row shares one column template, so the columns still line up. */
 .results { margin-top: 16px; }
-.results table { width: 100%; border-collapse: collapse; font-size: 14.5px; line-height: 1.45; }
-.results th {
-  padding: 0 20px 10px 0; text-align: left; white-space: nowrap;
-  font-size: 13px; font-weight: 500; color: var(--ink-3); border-bottom: 1px solid var(--rule);
+.results table, .results thead, .results tbody { display: block; }
+.results table { font-size: 14.5px; line-height: 1.45; }
+.results tr {
+  display: grid; column-gap: 20px;
+  grid-template-columns: minmax(0, 40fr) minmax(0, 15fr) minmax(0, 33fr) minmax(max-content, 12fr);
 }
-.results td { padding: 14px 20px 14px 0; vertical-align: top; border-bottom: 1px solid var(--rule); }
-.results th:last-child, .results td:last-child { padding-right: 0; }
-.results th:nth-child(1) { width: 40%; }
-.results th:nth-child(2) { width: 15%; }
-.results th:nth-child(4) { width: 12%; }
+.results thead tr { padding-left: 19px; } /* lines labels up with the text inside each group's left edge */
+.results th {
+  padding: 0 0 10px; text-align: left; white-space: nowrap;
+  font-size: 13px; font-weight: 500; color: var(--ink-3);
+}
+.results td { padding: 0; vertical-align: top; }
+.res-group { padding: 14px 0 14px 16px; border-left: 3px solid var(--accent); }
+.res-group + .res-group { margin-top: 12px; }
+.res-group--mrt { border-left-color: var(--accent-2); }
+.res-group--champs { border-left-color: var(--special); }
 .res-event strong, .res-finish strong { display: block; font-weight: 600; color: var(--ink); }
 .res-event span, .res-finish span:not(.res-none) { display: block; margin-top: 2px; font-size: 13.5px; color: var(--ink-3); }
 .is-win .res-finish strong { color: var(--gold); }
@@ -371,8 +380,8 @@ code {
 /* Alliance partners: a second row under the event, set apart in a soft
    grey strip so it reads as "who we played with" rather than more results.
    Each partner links to its season on The Blue Alliance. */
-.results tr.has-alliance td { padding-bottom: 10px; border-bottom: 0; }
-.res-alliance td { padding-top: 0; }
+.res-alliance { margin-top: 12px; }
+.res-alliance td { grid-column: 1 / -1; }
 .res-alliance-in {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
   padding: 8px 14px; border-radius: 8px; background: var(--rule-2);
@@ -401,11 +410,10 @@ a.team:hover .team-label { color: var(--ink); text-decoration: underline; text-u
 /* Phones: each row becomes a short stack — event, finish, awards, rank. */
 @media (max-width: 699px) {
   .results thead { display: none; }
-  .results tr { display: flex; flex-direction: column; gap: 6px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
-  .results tr:first-child { border-top: 1px solid var(--rule); }
-  .results tr.has-alliance { padding-bottom: 10px; border-bottom: 0; }
+  .results tr { display: flex; flex-direction: column; gap: 6px; }
+  .res-group { padding: 12px 0 12px 14px; }
+  .res-alliance { margin-top: 10px; }
   .res-alliance-label { flex-basis: 100%; padding-right: 0; border-right: 0; }
-  .results td, .results tr.has-alliance td, .res-alliance td { padding: 0; border: 0; }
   .res-empty { display: none; }
   .res-rank { font-size: 13.5px; color: var(--ink-3); }
   .res-rank::before { content: "Qualifying rank "; }
